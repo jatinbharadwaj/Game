@@ -20,7 +20,7 @@ public:
 	float maxSpeed;
 
 	Bullet(float radius = 5.f)
-		: currVelocity(0.f, 0.f), maxSpeed(10.f)
+		: currVelocity(0.f, 0.f), maxSpeed(5.f)
 	{
 		this->shape.setRadius(radius);
 		this->shape.setFillColor(Color::Red);
@@ -46,7 +46,7 @@ int main()
 
 	//Enemy
 	CircleShape enemy(40.f);
-	enemy.setFillColor(Color::Magenta);
+	enemy.setFillColor(Color(rand()%255,rand()%255,rand()%255));
 	// enemy.setSize(Vector2f(50.f, 50.f));
 	int spawnCounter = 20;
 
@@ -102,11 +102,11 @@ int main()
 
 			spawnCounter = 0;
 		}
-
+        // MOVEMENT OF ASTEROIDS
         for (size_t i = 0; i < enemies.size(); i++)
 		{
-            float movex = rand()%3;
-            float movey = rand()%3;
+            float movex = rand()%5 - rand()%2;
+            float movey = rand()%5 - rand()%2;
 			enemies[i].move(movex, movey);
 
 			if (enemies[i].getPosition().y > window.getSize().y)
@@ -118,7 +118,6 @@ int main()
 		{
 			b1.shape.setPosition(playerCenter);
 			b1.currVelocity = aimDirNorm * b1.maxSpeed;
-
 			bullets.push_back(Bullet(b1));
 		}
 
@@ -144,6 +143,8 @@ int main()
 						enemies.erase(enemies.begin() + k);
 						break;
 					}
+
+            
 				}
 			}
 		}
@@ -156,12 +157,42 @@ int main()
 			window.draw(enemies[i]);
 		}
 
+        // BOUNDARY FOR PLAYER
+        if(player.getPosition().y>window.getSize().y-5){
+            player.setPosition(player.getPosition().x,window.getSize().y-10);
+        }
+        if(player.getPosition().x>window.getSize().x-5){
+            player.setPosition(window.getSize().x-10,player.getPosition().y);
+        }
+        if(player.getPosition().y<0){
+            player.setPosition(player.getPosition().x,60.f);
+        }
+        if(player.getPosition().x<0){
+            player.setPosition(60.f,player.getPosition().y);
+        }
+
+        
 		window.draw(player);
 
 		for (size_t i = 0; i < bullets.size(); i++)
 		{
 			window.draw(bullets[i].shape);
 		}
+
+        // for(size_t i = 0;i<enemies.size();i++){
+        //     FloatRect shape1 = player.getGlobalBounds();
+        //     FloatRect shape2 = enemies[i].getGlobalBounds();
+
+        //     float dx = ( player.getPosition().x + (shape1.width / 2)) - (enemies[i].getPosition().x +  (shape1.width / 2));
+
+        //     float dy = ( player.getPosition().y + (shape1.width / 2)) - (enemies[i].getPosition().y +  (shape1.width / 2));
+
+        //     float distance = std::sqrt((dx*dx) + (dy*dy));
+
+        //     if(distance <= (shape1.width/2) + (shape2.width/2))
+        //         std::cout<<"collision detected";
+
+        // }
 
 		window.display();
 	}
