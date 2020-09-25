@@ -874,7 +874,7 @@ void game::setKey(int key, int playerNumber, bool value) {
 		}
 		else if (playerNumber == 1) {
 			switch (key) {
-			 case sf::Keyboard::LShift:
+			case sf::Keyboard::U:
 				if (value) {
 					for (int i = 0; i < MAX_BULLETS; i++) {
 						if (!bulletsArray[i].isAlive()) {
@@ -965,7 +965,7 @@ void game::saveGameStatus() {
 	}
 }
 
-void game::loadGame() {
+	void game::loadGame() {
 	gameStatusStruct gameStatus;
 	FILE *fp;
 	fp = fopen("save.dat", "rb");
@@ -1020,7 +1020,7 @@ int main() {
 					}
 					else if (event.key.code == sf::Keyboard::S) {
 						menu.moveDown();
-					}
+					} 
 					else if (event.key.code == sf::Keyboard::Space && menu.getSelectedItem() == 1) {
 						if (menu.getNext()) {
 							other::DIFFICULTY = 0;
@@ -1059,13 +1059,13 @@ int main() {
 					if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Space) {
 						game.setKey(event.key.code, 0, true);
 					}
-					 else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::LShift) {
+					else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::U) {
 						game.setKey(event.key.code, 1, true);
-						if (event.key.code == sf::Keyboard::LShift && game.getPause()) {
+						if (event.key.code == sf::Keyboard::U && game.getPause()) {
 							window.close();
 						}
 					}
-					else if (event.key.code == sf::Keyboard::LShift) {
+					else if (event.key.code == sf::Keyboard::F1) {
 						game.setPause(0);
 					}
 					else if (event.key.code == sf::Keyboard::Escape) {
@@ -1083,7 +1083,7 @@ int main() {
 					if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Space) {
 						game.setKey(event.key.code, 0, false);
 					}
-					else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::LShift) {
+					else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::U) {
 						game.setKey(event.key.code, 1, false);
 					}
 				}
