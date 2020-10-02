@@ -1,4 +1,7 @@
 #include<iostream>
+// #include "./SFML/Graphics.hpp"
+// #include"./SFML/Window.hpp"
+// #include"./SFML/System.hpp"
 #include<SFML/Graphics.hpp>
 #include<SFML/Window.hpp>
 #include<SFML/System.hpp>
@@ -6,6 +9,9 @@
 #include<cmath>
 #include<vector>
 #include<cstdlib>
+#include<string>
+#include<ctime>
+#include <unistd.h>
 
 //LENGTH OF VECTOR: |V| = sqrt(V.x^2 + V.y^2)
 //NORMALIZE VECTOR: U = V / |V|
@@ -16,11 +22,11 @@ class Bullet
 {
 public:
 	CircleShape shape;
-	Vector2f currVelocity;
+	Vector2f currVelocity; 
 	float maxSpeed;
 
 	Bullet(float radius = 5.f)
-		: currVelocity(0.f, 0.f), maxSpeed(5.f)
+		: currVelocity(0.f, 0.f), maxSpeed(10.f)
 	{
 		this->shape.setRadius(radius);
 		this->shape.setFillColor(Color::Red);
@@ -34,10 +40,27 @@ int main()
 	RenderWindow window(VideoMode(800, 600), "Asteroids", Style::Default);
 	window.setFramerateLimit(60);
 
+
+	int score=0;
+	time_t start,finish;
+	time(&start);
+	Text text;
+	Font font;
+	font.loadFromFile("consola.ttf");
+	text.setFont(font);
+	text.setPosition(40.f,50.f);
+	text.setCharacterSize(40);
+	text.setFillColor(sf::Color::White);
+
+
+
+
 	//Player
-	CircleShape player(25.f);
-	player.setFillColor(Color::White);
+	CircleShape player(20.f);
+	player.setFillColor(Color::Transparent);
 	player.setPointCount(3);
+	player.setOutlineThickness(5.f);
+	player.setOutlineColor(Color::Yellow);
 	player.setPosition(window.getSize().x/2, window.getSize().y/2);
 
 	//Bullets
@@ -46,7 +69,7 @@ int main()
 
 	//Enemy
 	CircleShape enemy(40.f);
-	enemy.setFillColor(Color(rand()%255,rand()%255,rand()%255));
+	// enemy.setFillColor(Color(rand()%255,rand()%255,rand()%255));
 	// enemy.setSize(Vector2f(50.f, 50.f));
 	int spawnCounter = 20;
 
@@ -61,6 +84,7 @@ int main()
 	while (window.isOpen())
 	{
 		Event event;
+		enemy.setFillColor(Color(rand()%255,rand()%255,rand()%255));
 		while (window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
@@ -69,7 +93,8 @@ int main()
 
 		//Update
 		//Vectors
-		playerCenter = Vector2f(player.getPosition().x + player.getRadius(),player.getPosition().y+ player.getRadius());
+		playerCenter = Vector2f(player.getPosition().x-player.getRadius() , player.getPosition().y-player.getRadius());   //<-
+		//playerCenter = player.getOrigin();
 		mousePosWindow = Vector2f(Mouse::getPosition(window));
 		aimDir = mousePosWindow - playerCenter;
 		aimDirNorm = aimDir / (float)sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
@@ -92,21 +117,22 @@ int main()
 			player.move(0.f, 10.f);
 
 		//Enemies
-		if (spawnCounter < 20)
+		if (spawnCounter < 30)
 			spawnCounter++;
 
-		if(spawnCounter >= 20 && enemies.size() < 50)
-		{
-			enemy.setPosition(Vector2f(rand() % window.getSize().x, rand() % window.getSize().x));
+		if(spawnCounter >= 30 && enemies.size() < 50) 
+		{				
+			enemy.setPosition(Vector2f(rand() % window.getSize().x, rand() % window.getSize().y));    // <-
 			enemies.push_back(CircleShape(enemy));
-
 			spawnCounter = 0;
 		}
+
         // MOVEMENT OF ASTEROIDS
         for (size_t i = 0; i < enemies.size(); i++)
 		{
-            float movex = rand()%5 - rand()%2;
-            float movey = rand()%5 - rand()%2;
+            float movex = rand()%2 - rand()%3;
+            float movey = rand()%6 - rand()%3;
+
 			enemies[i].move(movex, movey);
 
 			if (enemies[i].getPosition().y > window.getSize().y)
@@ -141,16 +167,39 @@ int main()
 					{
 						bullets.erase(bullets.begin() + i);
 						enemies.erase(enemies.begin() + k);
+						score++;
 						break;
+					}
+
+
+					if (player.getGlobalBounds().intersects(enemies[k].getGlobalBounds())){
+						// std::cout<<"Collided";
+						window.clear();
+						text.setString("GameOver!!");
+						window.draw(text);
+
+						window.display();
+						sleep(5);
+
+						window.close();
 					}
 
             
 				}
 			}
 		}
+		
 
 		//Draw
 		window.clear();
+		
+		time(&finish);
+		std::string timeNow = "Time:" + std::to_string(difftime(finish,start)) + " Score:" + std::to_string(score);
+		text.setString(timeNow);
+
+
+
+		window.draw(text);
 
 		for (size_t i = 0; i < enemies.size(); i++)
 		{
@@ -170,7 +219,6 @@ int main()
         if(player.getPosition().x<0){
             player.setPosition(60.f,player.getPosition().y);
         }
-
         
 		window.draw(player);
 
@@ -179,23 +227,11 @@ int main()
 			window.draw(bullets[i].shape);
 		}
 
-        // for(size_t i = 0;i<enemies.size();i++){
-        //     FloatRect shape1 = player.getGlobalBounds();
-        //     FloatRect shape2 = enemies[i].getGlobalBounds();
-
-        //     float dx = ( player.getPosition().x + (shape1.width / 2)) - (enemies[i].getPosition().x +  (shape1.width / 2));
-
-        //     float dy = ( player.getPosition().y + (shape1.width / 2)) - (enemies[i].getPosition().y +  (shape1.width / 2));
-
-        //     float distance = std::sqrt((dx*dx) + (dy*dy));
-
-        //     if(distance <= (shape1.width/2) + (shape2.width/2))
-        //         std::cout<<"collision detected";
-
-        // }
 
 		window.display();
 	}
 
 	return 0;
 }
+
+

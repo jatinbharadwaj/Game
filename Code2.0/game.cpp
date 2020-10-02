@@ -133,3 +133,22 @@ int main()
 
 	return 0;
 }
+
+// COLLISION DETECTION
+
+		//for(size_t i = 0;i<enemies.size();i++){
+            // FloatRect shape1 = player.getGlobalBounds();
+            // FloatRect shape2 = enemies[i].getGlobalBounds();
+
+            // float dx = ( player.getPosition().x + (shape1.width / 2)) - (enemies[i].getPosition().x +  (shape1.width / 2));
+
+            // float dy = ( player.getPosition().y + (shape1.width / 2)) - (enemies[i].getPosition().y +  (shape1.width / 2));
+
+            // float distance = std::sqrt((dx*dx) + (dy*dy));
+
+            // if(distance <= (shape1.width/2) + (shape2.width/2))
+            // {	
+			// 	window.close();
+			// }
+
+       // }
